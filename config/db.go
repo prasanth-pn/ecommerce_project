@@ -15,7 +15,22 @@ func Init() *gorm.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db.AutoMigrate(&model.Admin{})
-	db.AutoMigrate((&model.User{}))
+	err = db.AutoMigrate(&model.Admin{})
+	if err != nil {
+		log.Println("error is happen ")
+	}
+	err = db.AutoMigrate(&model.User{})
+	if err != nil {
+		log.Println("error is happen user")
+	}
+
+	err = db.AutoMigrate(&model.Product{})
+	if err != nil {
+		log.Println("ERROR IS HAPPEN WHILE IN FETCHING PRODUCT DATA")
+	}
+	err = db.AutoMigrate(&model.Category{})
+	if err != nil {
+		log.Println("Error is while in fetching category data")
+	}
 	return db
 }
