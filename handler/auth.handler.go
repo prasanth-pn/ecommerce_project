@@ -97,6 +97,7 @@ func (c *authHandler) AdminLogin() http.HandlerFunc {
 		if err != nil {
 			return
 		}
+
 		//verifying admin credentials
 
 		err = c.authService.VerifyAdmin(adminLogin.Username, adminLogin.Password)
@@ -123,8 +124,11 @@ func (c *authHandler) AdminSignup() http.HandlerFunc {
 		var newAdmin model.Admin
 
 		//fetching data
-		json.NewDecoder(r.Body).Decode(&newAdmin)
-		err := c.adminService.CreateAdmin(newAdmin)
+		err := json.NewDecoder(r.Body).Decode(&newAdmin)
+		if err != nil {
+			log.Println("unable to fetch data from json")
+		}
+		err = c.adminService.CreateAdmin(newAdmin)
 		if err != nil {
 			respons := response.ErrorResponse("failed to signup", err.Error(), nil)
 			w.Header().Add("Content-Type", "application/json")

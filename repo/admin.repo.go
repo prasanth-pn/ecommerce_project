@@ -11,6 +11,7 @@ type AdminRepository interface {
 	FindAdmin(username string) (model.AdminResponse, error)
 	ViewAllUsers() ([]model.UserResponse, error)
 	CreateProduct(product model.Product) error
+	CreateCategory(category model.Category) error
 }
 type adminRepo struct {
 	db *sql.DB
@@ -113,8 +114,10 @@ products (product_name,
           color,
           available,
           rating,
-          trending)
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9);`
+          trending,
+          category_name)
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);`
+
 	err := c.db.QueryRow(query, product.Product_name,
 		product.Description,
 		product.Quantity,
@@ -124,7 +127,17 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9);`
 		product.Available,
 		product.Rating,
 		product.Trending,
+		product.Category_name,
 	).Err()
 	return err
 
+}
+func (c *adminRepo) CreateCategory(category model.Category) error {
+	query := `INSERT INTO categories(category_name,image,description)
+VALUES($1,$2,$3);`
+
+	err := c.db.QueryRow(query, category.Category_name,
+		category.Image,
+		category.Description).Err()
+	return err
 }

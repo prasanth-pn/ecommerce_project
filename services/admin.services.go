@@ -3,6 +3,7 @@ package services
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"project/model"
 	"project/repo"
@@ -11,9 +12,9 @@ import (
 type AdminService interface {
 	CreateAdmin(admin model.Admin) error
 	FindAdmin(username string) (*model.AdminResponse, error)
-	//AllUsers(pagenation utils.Filter) (*[]model.UserResponse, utils.Metadata)Metadata
 	AllUsers() (*[]model.UserResponse, error)
 	CreateProduct(product model.Product) error
+	CreateCategory(category model.Category) error
 }
 type adminService struct {
 	adminRepo repo.AdminRepository
@@ -62,6 +63,7 @@ func (c *adminService) CreateAdmin(admin model.Admin) error {
 func (c *adminService) AllUsers() (*[]model.UserResponse, error) {
 	users, err := c.adminRepo.ViewAllUsers()
 	if err != nil {
+		fmt.Println("alllusers admin service")
 		return nil, err
 	}
 	return &users, nil
@@ -76,4 +78,13 @@ func (c *adminService) CreateProduct(product model.Product) error {
 	}
 	return nil
 
+}
+func (c *adminService) CreateCategory(category model.Category) error {
+	err := c.adminRepo.CreateCategory(category)
+	if err != nil {
+		log.Println(err)
+		return errors.New("error while signup")
+
+	}
+	return nil
 }

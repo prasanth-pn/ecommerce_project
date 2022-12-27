@@ -14,6 +14,7 @@ type AdminHandler interface {
 	ViewAllUser() http.HandlerFunc
 	ViewSingleUser() http.HandlerFunc
 	AddProducts() http.HandlerFunc
+	AddCategory() http.HandlerFunc
 }
 type adminHandler struct {
 	adminService services.AdminService
@@ -63,8 +64,20 @@ func (c *adminHandler) AddProducts() http.HandlerFunc {
 			return
 		}
 
-		//user, _ := c.userService.FindUser.Email)
-		//user.Password = ""
-
+	}
+}
+func (c *adminHandler) AddCategory() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var newCategory model.Category
+		_ = json.NewDecoder(r.Body).Decode(&newCategory)
+		err := c.adminService.CreateCategory(newCategory)
+		log.Println(newCategory)
+		if err != nil {
+			respons := response.ErrorResponse("failed to create category", err.Error(), nil)
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			utils.ResponseJSON(w, respons)
+			return
+		}
 	}
 }

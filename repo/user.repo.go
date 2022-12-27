@@ -2,6 +2,9 @@ package repo
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
+	"log"
 	"project/model"
 )
 
@@ -9,6 +12,8 @@ type UserRepository interface {
 	FindUser(email string) (model.UserResponse, error)
 	InsertUser(user model.User) (int, error)
 	ViewProducts() ([]model.ProductResponse, error)
+	StoreVerificationDetails(email string, code int) error
+	VerifyAccount(email string, code int) error
 }
 type userRepo struct {
 	db *sql.DB
@@ -101,4 +106,40 @@ rating FROM products;`
 		products = append(products, product)
 	}
 	return products, err
+}
+
+func (c *userRepo) StoreVerificationDetails(email string, code int) error {
+
+	fmt.Println(email, "userRepo")
+	query := `INSERT INTO 
+    verifications(email,code)
+	VALUES($1,$2);`
+
+	err := c.db.QueryRow(query, email, code).Err()
+
+	return err
+}
+func (c *userRepo) VerifyAccount(email string, code int) error {
+	var id int
+	query := `SELECT id FROM verifications WHERE email=$1 AND code=$2;`
+	err := c.db.QueryRow(query, email, code).Scan(&id)
+	if err == sql.ErrNoRows {
+		return errors.New("invalid verification code Email")
+
+	}
+	if err != nil {
+		return err
+	}
+	query = `UPDATE users 
+				SET
+				 verification = $1
+				WHERE
+				 email = $2 ;`
+	err = c.db.QueryRow(query, true, email).Err()
+	log.Println("Updating User verification: ", err)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

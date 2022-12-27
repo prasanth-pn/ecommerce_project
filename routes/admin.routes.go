@@ -31,8 +31,9 @@ func (r *adminRoute) AdminRouter(routes chi.Router,
 	routes.Group(
 		func(r chi.Router) {
 			r.Use(middleware.AuthorizeJwt)
-
+			//r.Get("/admin/users/block", adminHandler.BlockUser())
 			r.Get("/admin/view/users", adminHandler.ViewAllUser())
+			r.Get("/admin/add/category", adminHandler.AddCategory())
 			r.Get("/admin/addproduct", adminHandler.AddProducts())
 		},
 	)

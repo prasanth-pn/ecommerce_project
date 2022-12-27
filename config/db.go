@@ -32,5 +32,9 @@ func Init() *gorm.DB {
 	if err != nil {
 		log.Println("Error is while in fetching category data")
 	}
+	err = db.AutoMigrate(&model.Verification{})
+	if err != nil {
+		log.Println("error is whiel fectching verification data")
+	}
 	return db
 }

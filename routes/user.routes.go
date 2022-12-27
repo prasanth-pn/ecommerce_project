@@ -25,13 +25,15 @@ func (r *userRoute) UserRouter(routes chi.Router,
 	authHandler h.AuthHandler,
 	userMiddleware m.Middleware) {
 
+	routes.Get("/user/view/products", userHandler.ViewProducts())
+
 	routes.Post("/user/signup", authHandler.UserSignup())
 	routes.Post("/user/login", authHandler.UserLogin())
-
+	routes.Post("/user/send/verification", userHandler.SendVerificationEmail())
+	routes.Patch("/user/verify/account", userHandler.VerifyAccount())
 	routes.Group(
 		func(r chi.Router) {
 			r.Use(userMiddleware.AuthorizeJwt)
-			r.Get("/user/view/products", userHandler.ViewProducts())
 
 		})
 
